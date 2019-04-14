@@ -71,7 +71,9 @@ for (var i = 0; i < 200; i++) {
     generation[i] = newNetwork();
 }
 
+let generationNumber = 0;
 while (true) {
+    generationNumber++;
     var fitness = sizedArray(generation.length);
     for (var t = 0; t < 6144; t++) {
         getNewQuestion();
@@ -82,7 +84,8 @@ while (true) {
         }
     }
     var highestFitness = fitness[largestIndex(fitness)];
-    console.log([generation[largestIndex(fitness)], 6144 - highestFitness]);
+    console.log(arrToStr(generation[largestIndex(fitness)].exportNetwork()));
+    console.log([6144 - highestFitness, generationNumber]);
     var best = [];
     for (var i = 0; i < 5; i++) {
         best.push(generation[largestIndex(fitness)].clone());
@@ -90,7 +93,7 @@ while (true) {
     }
     var generation = best.slice();
     for (var i = 5; i < 200; i++) {
-        generation.push(mutate(generation[i % 5], -highestFitness / 3072 + 2));
+        generation.push(mutate(generation[i % 5], -highestFitness / 3100 + 2));
     }
 }
 

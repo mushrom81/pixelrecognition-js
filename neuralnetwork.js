@@ -9,6 +9,14 @@ function sizedArray(width, defaultValue = 0) {
     return array;
 }
 
+function arrToStr(array) {
+    var string = "";
+    for (var i = 0; i < array.length; i++) {
+        string += array[i].toString() + ",";
+    }
+    return string;
+}
+
 class Node {
     constructor(strengths, layer, bias, output = 0) {
         this._strengths = strengths;
@@ -88,6 +96,43 @@ class Network {
         this._outputs = [];
         for (var i = 0; i < this._widths[this._widths.length - 1]; i++) {
             this._outputs.push(this._layers[this._widths.length - 1][i].output);
+        }
+    }
+
+    exportNetwork() {
+        var exportedNetwork = [];
+        exportedNetwork.push(this._widths.length);
+        for (var i = 0; i < this._widths.length; i++) {
+            exportedNetwork.push(this._widths[i]);
+        }
+        for (var i = 1; i < this._layers.length; i++) {
+            for (var j = 0; j < this._layers[i].length; j++) {
+                exportedNetwork.push(this._layers[i][j].bias);
+                for (var k = 0; k < this._layers[i][j].strengths.length; k++) {
+                    exportedNetwork.push(this._layers[i][j].strengths[k]);
+                }
+            }
+        }
+        return exportedNetwork;
+    }
+
+    importNetwork(exportedNetwork) {
+        this._outputs = [];
+        this._widths = [];
+        this._layers = [];
+        for (var i = 1; i < exportedNetwork.shift() + 1; i++) {
+            this._widths.push(exportedNetwork.shift());
+            this._layers.push([]);
+        }
+        for (var i = 1; i < this._widths.length; i++) {
+            for (var j = 0; j < this._widths[i]; j++) {
+                var nodeBias = exportedNetwork.shift();
+                var nodeStrengths = [];
+                for (var k = 0; k < this._widths[i - 1]; k++) {
+                    nodeStrengths.push(exportedNetwork.shift());
+                }
+                this.addNode(nodeStrengths, i, nodeBias);
+            }
         }
     }
 }
